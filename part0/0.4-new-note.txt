@@ -1,0 +1,7 @@
+user->browser: fills note input and clicks submit
+browser->server: POST form data (new note) to /new_note
+note over server: server handles new_note request and adds new note data to notes array
+server-->browser: HTTP 302 redirect to /notes
+note over browser: browser reload /notes page
+note over browser: browser request again resources from server, execute js, send request for notes.json and renders notes in XHR callback
+browser->user: presents /notes page with submitted by user note

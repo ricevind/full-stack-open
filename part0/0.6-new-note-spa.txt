@@ -1,0 +1,14 @@
+user->browser: fills note input and clicks submit
+
+note over browser:
+form submit handler is called
+end note
+
+browser->user: Note is rendered on screen
+browser->server: POST note data in JSON format /new_note_spa
+
+note over server:
+server creates and stores new note
+end note
+
+server-->browser: HTTP 201 Created
