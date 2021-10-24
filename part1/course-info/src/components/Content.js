@@ -1,7 +1,7 @@
 export const Content = ({ children }) => <div>{children}</div>;
 
-Content.Part = ({ part, exercises }) => (
+Content.Part = ({ name, exercises }) => (
   <p>
-    {part} {exercises}
+    {name} {exercises}
   </p>
 );
