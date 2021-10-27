@@ -1,9 +1,15 @@
-import { Header, Content, Total } from "../components";
+import { Header, Part, Total } from "../components";
 
-export const Course = ({ course }) => (
-  <div>
-    <Header title={course.name} />
-    <Content parts={course.parts}></Content>
-    <Total parts={course.parts} />
-  </div>
-);
+export const Course = ({ course }) => {
+  return (
+    <div>
+      <Header title={course.name} />
+      <div>
+        {course.parts.map((part) => (
+          <Part key={part.id} {...part}></Part>
+        ))}
+      </div>
+      <Total parts={course.parts} />
+    </div>
+  );
+};
