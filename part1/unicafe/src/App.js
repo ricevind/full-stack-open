@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
-const addOneTo = (counterSetter) => () =>
-  counterSetter((counter) => counter + 1);
+const useAddOneTo = (counterSetter) => {
+  const addOneTo = useCallback(
+    () => counterSetter((counter) => counter + 1),
+    [counterSetter]
+  );
+
+  return addOneTo;
+};
 
 const toPrecision = (value) => value.toPrecision(4);
 const toPercentage = (value) => `${toPrecision(value * 100)} %`;
@@ -11,13 +17,17 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
 
+  const addOneToGood = useAddOneTo(setGood);
+  const addOneToNeutral = useAddOneTo(setNeutral);
+  const addOneToBad = useAddOneTo(setBad);
+
   return (
     <div style={{ padding: "0 1rem" }}>
       <h1>Gib fitBack</h1>
       <div>
-        <Button onClickHandle={addOneTo(setGood)}>good</Button>
-        <Button onClickHandle={addOneTo(setNeutral)}>neutral</Button>
-        <Button onClickHandle={addOneTo(setBad)}>bad</Button>
+        <Button onClick={addOneToGood}>good</Button>
+        <Button onClick={addOneToNeutral}>neutral</Button>
+        <Button onClick={addOneToBad}>bad</Button>
       </div>
 
       <Statistics {...{ good, bad, neutral }}></Statistics>
@@ -27,9 +37,9 @@ const App = () => {
 
 export default App;
 
-const Button = ({ onClickHandle, children }) => (
-  <button onClick={onClickHandle}>{children}</button>
-);
+const Button = React.memo(({ onClick, children }) => (
+  <button onClick={onClick}>{children}</button>
+));
 
 const StatisticsLine = ({ text, value }) => (
   <tr>
