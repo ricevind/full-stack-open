@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const arrayMaxIndex = (array) =>
   array.reduce(
@@ -6,6 +6,21 @@ const arrayMaxIndex = (array) =>
       candidateValue > array[currentMaxIndex] ? i : currentMaxIndex,
     0
   );
+
+function useMostVotedIndex(votes) {
+  const lastMostVotedRef = useRef([null, null]); // [index, value]
+  const  [lastMostVotedIndex, lastMostVotedValue]  = lastMostVotedRef.current;
+  
+  const nextMostVotedIndex = arrayMaxIndex(votes);
+  const nextMostVotedValue = votes[nextMostVotedIndex];
+
+ if (nextMostVotedValue > lastMostVotedValue) {
+  lastMostVotedRef.current = [nextMostVotedIndex, nextMostVotedValue];
+  return nextMostVotedIndex
+ }
+
+ return lastMostVotedIndex
+}
 
 const App = () => {
   const anecdotes = [
@@ -22,6 +37,7 @@ const App = () => {
   const [votes, setVotes] = useState(
     Array.from({ length: anecdotes.length }, () => 0)
   );
+  const mostVotedIndex = useMostVotedIndex(votes);
 
   const nextAnecdote = () => {
     let nextAnecdoteIndex;
@@ -42,7 +58,7 @@ const App = () => {
     setVotes(copy);
   };
 
-  const mostVotedAnecdote = anecdotes[arrayMaxIndex(votes)];
+  const mostVotedAnecdote = anecdotes[mostVotedIndex];
 
   return (
     <>
