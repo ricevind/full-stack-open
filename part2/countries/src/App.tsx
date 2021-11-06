@@ -1,6 +1,8 @@
 import './App.css';
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react';
+
+import { CountryWhether } from './Whether';
 
 type Country = {
   name: { common: string; official: string };
@@ -8,10 +10,11 @@ type Country = {
   currencies: { [currency: string]: { name: string; symbol: string } };
   population: number;
   flag: string;
+  capital: string;
 };
 
 function useCountries() {
-  const [countries, setCountries] = useState<Country[] | null>(null);
+  const [countries, setCountries] = useState<Country[]>([]);
 
   useEffect(() => {
     fetch('https://restcountries.com/v3.1/all')
@@ -22,27 +25,45 @@ function useCountries() {
   return countries;
 }
 
-type CountriesFilterState = 'too-many' | 'many' | 'one';
+type CountriesFilterState = 'too-many' | 'many' | 'one' | 'empty';
+
+function getCountriesFilterState(numberOfCountries: number): CountriesFilterState {
+  if (numberOfCountries === 0) {
+    return 'empty';
+  }
+
+  if (numberOfCountries === 1) {
+    return 'one';
+  }
+
+  if (numberOfCountries <= 10) {
+    return 'many';
+  }
+
+  return 'too-many';
+}
+
+function hasSubstring(s: string, t: string) {
+  return t && s.toLowerCase().includes(t.toLowerCase());
+}
+
+const If = ({ true: test, children }: { true: boolean; children: ReactNode }) => (
+  <> {test && (typeof children === 'function' ? children() : children)} </>
+);
 
 function App() {
   const countries = useCountries();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const foundCountries = countries?.filter(
-    (country) =>
-      !!country?.name?.common?.includes(searchTerm) ||
-      !!country?.name?.official?.includes(searchTerm),
+  const foundCountries = countries.filter(({ name: { common, official } }) =>
+    [common, official].some((name) => hasSubstring(name, searchTerm)),
   );
 
-  const countriesFilterState: CountriesFilterState | null = !foundCountries
-    ? null
-    : foundCountries.length === 1
-    ? 'one'
-    : foundCountries.length < 10
-    ? 'many'
-    : 'too-many';
+  const countriesFilterState = getCountriesFilterState(foundCountries.length);
 
-  const singleCountry = foundCountries?.[0];
+  const singleCountry = foundCountries[0];
+  const doesFilterStateMatch = (c: CountriesFilterState): boolean =>
+    countriesFilterState === c;
 
   return (
     <div>
@@ -57,20 +78,37 @@ function App() {
       </div>
 
       <div>
-        {countriesFilterState === 'too-many' && (
+        <If true={doesFilterStateMatch('too-many')}>
           <h2>To many countries found, specify search more</h2>
-        )}
-        {countriesFilterState === 'many' &&
-          foundCountries &&
-          foundCountries.map((country) => (
-            <p key={country.name.common}>{country.name.common}</p>
+        </If>
+
+        <If true={doesFilterStateMatch('many')}>
+          {foundCountries.map((country) => (
+            <div key={country.name.common}>
+              <span>{country.name.common}</span>
+              <button
+                className="inline-block margin-left-1"
+                onClick={() => setSearchTerm(country.name.common)}>
+                Show
+              </button>
+            </div>
           ))}
-        {countriesFilterState === 'one' && singleCountry && (
-          <>
-            <p>{singleCountry.flag}</p>
-            <pre>{JSON.stringify(singleCountry, null, 2)}</pre>
-          </>
-        )}
+        </If>
+
+        <If true={doesFilterStateMatch('one')}>
+          {() => (
+            <>
+              <p>{singleCountry.flag}</p>
+              <pre>{JSON.stringify(singleCountry, null, 2)}</pre>
+              <CountryWhether
+                country={`${singleCountry.capital}, ${singleCountry.name.official}}`}></CountryWhether>
+            </>
+          )}
+        </If>
+
+        <If true={doesFilterStateMatch('empty')}>
+          <h2>No country found</h2>
+        </If>
       </div>
     </div>
   );
