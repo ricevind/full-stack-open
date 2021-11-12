@@ -61,7 +61,7 @@ function App() {
 
   const countriesFilterState = getCountriesFilterState(foundCountries.length);
 
-  const singleCountry = foundCountries[0];
+  const singleCountry = foundCountries.find((_, index) => index === 0);
   const doesFilterStateMatch = (c: CountriesFilterState): boolean =>
     countriesFilterState === c;
 

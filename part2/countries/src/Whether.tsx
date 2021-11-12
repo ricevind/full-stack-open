@@ -6,10 +6,11 @@ export function useWeather(query: string) {
   const [whether, setWhether] = useState<any>(null);
 
   const { signal, abort } = new AbortController();
-  const q = new URLSearchParams(`query=${query}`);
+  const q = `query=${query}`;
 
   useEffect(() => {
     setWhether(null);
+    console.log(query);
     fetch(`http://api.weatherstack.com/current?access_key=${api_key}&${q.toString()}`, {
       signal,
     })

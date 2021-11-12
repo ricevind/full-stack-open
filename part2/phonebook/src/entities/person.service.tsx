@@ -1,6 +1,6 @@
 import { CreatedPerson, PersonCreationParams, Persons } from './person.model';
 
-const personsUrl = 'http://localhost:3001/persons';
+const personsUrl = '/api/persons';
 
 const getPersons = () =>
   fetch(personsUrl)
