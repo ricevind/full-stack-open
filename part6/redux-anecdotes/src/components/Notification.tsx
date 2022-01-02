@@ -1,12 +1,21 @@
 import React from "react";
+import { useAppSelector } from "../store";
 
-const Notification = () => {
+export const Notification = () => {
+  const notifications = useAppSelector((state) => state.notifications);
+
   const style = {
     border: "solid",
     padding: 10,
     borderWidth: 1,
   };
-  return <div style={style}>render here notification...</div>;
+  return (
+    <>
+      {notifications.map((notification) => (
+        <div key={notification.message} style={style}>
+          {notification.message}
+        </div>
+      ))}
+    </>
+  );
 };
-
-export default Notification;
