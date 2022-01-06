@@ -1,15 +1,19 @@
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk } from "./index";
 import {
   Notification,
   NotificationCreateParams,
   NotificationCreator,
 } from "../models/notification.model";
+import {
+  AppThunk,
+  notificationsSliceKey,
+  NotificationState,
+} from "./store.model";
 
-const initialState: Notification[] = [];
+const initialState: NotificationState = [];
 
 export const notificationsSlice = createSlice({
-  name: "notifications",
+  name: notificationsSliceKey,
   initialState,
   reducers: {
     setNotification: {
@@ -18,6 +22,7 @@ export const notificationsSlice = createSlice({
         { payload: notification }: PayloadAction<Notification>
       ) => {
         state.push(notification);
+        return state;
       },
       prepare: (notificationCreateParams: NotificationCreateParams) => ({
         payload: NotificationCreator.create(notificationCreateParams),
@@ -30,18 +35,15 @@ export const notificationsSlice = createSlice({
   },
 });
 
-export const createWithNotification =
+export const showNotification =
   ({
     notificationParams,
     duration = 5000,
-    action,
   }: {
     notificationParams: NotificationCreateParams;
-    action: AnyAction;
     duration?: number;
   }): AppThunk =>
   async (dispatch) => {
-    dispatch(action);
     const setNotificationAction =
       notificationsSlice.actions.setNotification(notificationParams);
     dispatch(setNotificationAction);
@@ -58,4 +60,17 @@ export const createWithNotification =
     });
 
     await removeNotificationPromise;
+  };
+
+export const createWithNotification =
+  ({
+    notificationParams,
+    duration = 5000,
+    action,
+  }: {
+    action: AnyAction;
+  } & Parameters<typeof showNotification>[0]): AppThunk =>
+  async (dispatch) => {
+    dispatch(action);
+    dispatch(showNotification({ notificationParams, duration }));
   };

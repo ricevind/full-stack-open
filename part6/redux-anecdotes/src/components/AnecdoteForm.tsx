@@ -1,8 +1,6 @@
 import React, { FormEvent } from "react";
-import { NotificationType } from "../models/notification.model";
-import { useAppDispatch } from "../store";
-import { anecdotesSlice } from "../store/anecdotesSlice";
-import { createWithNotification as withNotification } from "../store/notificationsSlice";
+import { useAppDispatch } from "../store/hooks";
+import { createAnecdoteCreateThunk } from "../store/anecdotesSlice";
 
 export const AnecdoteForm = () => {
   const dispatch = useAppDispatch();
@@ -10,19 +8,7 @@ export const AnecdoteForm = () => {
   const submitNewAnecdote = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const anecdoteAction = anecdotesSlice.actions.create(
-      event.currentTarget.anecdote.value
-    );
-
-    dispatch(
-      withNotification({
-        notificationParams: {
-          message: "Anecdote added",
-          type: NotificationType.Info,
-        },
-        action: anecdoteAction,
-      })
-    );
+    dispatch(createAnecdoteCreateThunk(event.currentTarget.anecdote.value));
     event.currentTarget.anecdote.value = "";
   };
 

@@ -1,28 +1,11 @@
-import {
-  AnyAction,
-  configureStore,
-  ThunkAction,
-  ThunkDispatch,
-} from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import { anecdotesSlice } from "./anecdotesSlice";
 import { notificationsSlice } from "./notificationsSlice";
+import { AppState } from "./store.model";
 
-export const store = configureStore({
+export const store = configureStore<AppState>({
   reducer: {
     anecdotes: anecdotesSlice.reducer,
     notifications: notificationsSlice.reducer,
   },
 });
-
-export type AppState = ReturnType<typeof store.getState>;
-export type AppDispatch = ThunkDispatch<AppState, unknown, AnyAction>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  AppState,
-  unknown,
-  AnyAction
->;
-
-export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;

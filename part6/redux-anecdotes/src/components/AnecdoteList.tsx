@@ -1,9 +1,12 @@
-import React, { createRef, ForwardedRef, useRef } from "react";
+import React, { createRef, ForwardedRef, memo, useRef } from "react";
 import { useLayoutEffect } from "react";
 import { forwardRef } from "react";
 import { Anecdote } from "../models/anecdote.model";
-import { useAppDispatch, useAppSelector } from "../store";
-import { anecdotesSlice, selectSortedAnecdotes } from "../store/anecdotesSlice";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  createVoteAnecdoteThunk,
+  selectSortedAnecdotes,
+} from "../store/anecdotesSlice";
 import { AnecdoteListFilter } from "./AnecdoteListFilter";
 
 export const AnecdoteList = () => {
@@ -16,7 +19,7 @@ export const AnecdoteList = () => {
   sortIds.current = lastSortIds;
 
   const vote = (id: string) => {
-    dispatch(anecdotesSlice.actions.vote(id));
+    dispatch(createVoteAnecdoteThunk(id));
   };
 
   return (
@@ -35,6 +38,7 @@ export const AnecdoteList = () => {
     </div>
   );
 };
+AnecdoteList.displayName = "AnecdoteList";
 
 const AnecdoteComponent = forwardRef(
   (
@@ -58,6 +62,7 @@ const AnecdoteComponent = forwardRef(
     );
   }
 );
+AnecdoteComponent.displayName = "AnecdoteComponent";
 
 function AnimatedList({ children }: { children: React.ReactNode }) {
   const previousPositions = useRef<Record<string, number> | null>(null);
@@ -107,7 +112,7 @@ function AnimatedList({ children }: { children: React.ReactNode }) {
     }
   }, [children]);
 
-  return <div style={{ position: "relative" }}>{children}</div>;
+  return <div>{children}</div>;
 }
 
 const transformMove = (y: number) => `translate(0px, ${y}px)`;

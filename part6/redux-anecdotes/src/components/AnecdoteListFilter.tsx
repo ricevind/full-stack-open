@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { useAppDispatch } from "../store";
+import { useAppDispatch } from "../store/hooks";
 import { anecdotesSlice } from "../store/anecdotesSlice";
 
 export const AnecdoteListFilter = () => {

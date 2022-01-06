@@ -8,6 +8,6 @@ export type Anecdote = {
 
 export class AnecdoteCreator {
   static fromContent(content: string): Anecdote {
-    return { content, id: getId(), votes: 0 };
+    return { content: content, id: getId(), votes: 0 };
   }
 }
